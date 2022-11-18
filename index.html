@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <script src="https://unpkg.com/spacingjs" defer></script>
+    
+    <style>
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        ul,li{list-style: none;}
+        :root{
+            --btnCol:black;
+            --btnBgCol:rgb(211, 142, 12);
+        }
+        body{
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+        }
+        .container{
+            width: 100%;
+            height: 100%;
+
+            position: relative;
+            
+            transition: all 1s;
+
+            overflow: hidden;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container > .bgimg{
+            z-index: -1;
+            
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%,0);
+            
+            width: 80vmin;
+            height: 80vmin;
+            background-image: url(./src/moon.webp);
+            background-size: cover;
+            background-position: center;
+
+            transition: all 1s;
+        }
+        .container > .bgimg.active{
+            --bgHriOffset:0;
+            --bgVerOffset:0;
+            --bgScaleOffset:0;
+            top: 0;
+            left: 0;
+            transform: matrix(var(--bgScaleOffset),0,0,var(--bgScaleOffset),var(--bgHriOffset),var(--bgVerOffset));
+        }
+        
+        .container > .tabbar{
+            width: 55vmin;
+            height: 7vmin;
+            
+            position: relative;
+            top: 35%;
+        }
+        
+        .container > .tabbar > .btnContainer{
+            width: 100%;
+            height: 100%;
+
+            background-color: var(--btnBgCol);
+
+            position: absolute;
+
+            border-radius: 10px;
+            overflow: hidden;
+
+            transition: all .1s;
+        }
+
+        .container > .tabbar > .btnContainer.active{
+            background-color: rgba(255, 255, 255, 0);
+        }
+        
+        .container > .tabbar > .btnContainer > .btnbg{
+            width: 200%;
+            height: 100%;
+            position: absolute;
+            /* left: -30.5%; */
+
+            display: flex;
+
+            transition: all .5s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        .container > .tabbar > .btnContainer > .btnbg > div{
+            height: 100%;
+        }
+
+        .container > .tabbar > .btnContainer > .btnbg > .right{
+            border-radius: 2.2vmin 0 0 0;
+            transform: translateX(-.15vmin);
+        }
+        .container > .tabbar > .btnContainer > .btnbg > .left{
+            border-radius: 0 2.2vmin 0 0;
+            transform: translateX(.2vmin);
+        }
+        .container > .tabbar > .btnContainer > .btnbg > .left,
+        .container > .tabbar > .btnContainer > .btnbg > .right{
+            flex: 1;
+            background-color: var(--btnBgCol);
+        }
+        .container > .tabbar > .btnContainer > .btnbg > .center{
+            z-index: -1;
+            width: 5.8vmin;
+
+            background-image: radial-gradient(circle at 50% 0, transparent 42%, var(--btnBgCol) 43% 100%);
+        }
+        
+        .container > .tabbar > ul{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+
+            padding: 0 2vmin;
+            position: relative;
+        }
+        .container > .tabbar > ul > li{
+            width: 8vmin;
+            
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container > .tabbar > ul > li > img.active{
+            transform: translateY(-75%);
+        }
+        .container > .tabbar > ul > li:hover > img,
+        .container > .tabbar > ul > li > .active{
+            animation: btnBgChange 4s infinite steps(73);
+        }
+        .container > .tabbar > ul > li > img{
+            width: 5vmin;
+            height: 5vmin;
+
+            object-fit: cover;
+
+            transition: all .5s cubic-bezier(0.175,0.885,0.32,1.275);
+
+            z-index: 1;
+        }
+
+        @keyframes btnBgChange {
+            from{object-position: 0 0;}
+            to{object-position: 0 calc(5vmin * -73);}
+        }
+        
+        .container > .tabbar > ul > li > p{
+            position: absolute;
+
+            width: 20vmin;
+            transform: translateY(1vmin);
+            
+            text-align: center;
+            
+            font-size: 1.8vmin;
+            
+            font-weight: 800;
+            opacity: 0;
+            
+            transition: all .5s;
+        }
+        .container > .tabbar > ul > li > p.onscreen{
+            transform: scale(.7);
+            transform-origin: center bottom;
+            transform: translateY(1.5vmin);
+        }
+        .container > .tabbar > ul > li > img.active + p{
+            opacity: 1;
+        }
+        .container > .tabbar > ul > .anim{
+            width: 6vmin;
+            height: 6vmin;
+            background-color: var(--btnBgCol);
+            opacity: 0;
+
+            position: absolute;
+            top: -50%;
+            /* left: 64.3%; */
+            margin: auto;
+
+            border-radius: 100%;
+            transition: all .5s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        .container > .tabbar > ul > .anim.active{
+            opacity: 1;
+        }
+
+        .container > .info{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .container > .info > .foc{
+            width: 35vmin;
+            height: 35vmin;
+            border: .3vmin dashed var(--btnBgCol);
+
+            position: fixed;
+            top: 25vmin;
+            left: 12vmin;
+            opacity: 0;
+        }
+        .container > .info > .foc.active{
+            animation: focShark .5s forwards;
+        }
+
+        @keyframes focShark {
+            /* 0%{opacity: 0;} */
+            /* 3%{opacity: 1;} */
+            54%{opacity: 0;}
+            57%{opacity: 0;}
+            60%{opacity: 1;}
+            61%{opacity: 0;}
+            97%{opacity: 0;}
+            100%{opacity: 1;}
+        }
+
+        .container > .info > .text{
+            --frameCol:rgb(228, 228, 228);
+            width: 40vmin;
+            background-color: rgba(163, 163, 163, 0.449);
+            backdrop-filter: blur(7px);
+            border-top: 1.5px solid var(--frameCol);
+            border-left: 1.5px solid var(--frameCol);
+
+            position: fixed;
+
+            right: 10%;
+            top: 25vmin;
+
+            border-radius: 1.5vmin;
+
+            padding: 3vmin;
+
+            opacity: 0;
+
+            transition: all .8s;
+        }
+
+        .container > .info > .text.active{
+            opacity: 1;
+        }
+        .container > .info > .text > .title{
+            font-size: 5vmin;
+            font-weight: 700;
+            letter-spacing: 1vmin;
+            color: var(--btnBgCol);
+            margin-bottom: 2vmin;
+
+            white-space: nowrap;
+            overflow: hidden;
+
+            width: 0;
+            /* width: 50vmin; */
+            border-right: 2px solid;
+            border-color: transparent;
+
+            --wid:0;
+        }
+        .container > .info > .text > .title.ffh{
+            animation: ffhtyping 1.5s forwards steps(3),
+                       ffhcaret .5s steps(1) infinite;
+        }
+        .container > .info > .text > .title.wh{
+            animation: whtyping 1s forwards steps(2),
+                       whcaret .5s steps(1) infinite;
+        }
+        .container > .info > .text > .title.jh{
+            animation: jhtyping 1s forwards steps(2),
+                       jhcaret .5s steps(1) infinite;
+        }
+        .container > .info > .text > .title.ch{
+            animation: chtyping 1.5s forwards steps(3),
+                       chcaret .5s steps(1) infinite;
+        }
+        .container > .info > .text > .title.yh{
+            animation: yhtyping 1s forwards steps(2),
+                       yhcaret .5s steps(1) infinite;
+        }
+        @keyframes ffhcaret {
+            50%{
+                border-color: var(--btnBgCol);
+            }
+        }
+        
+        @keyframes ffhtyping {
+            form{
+                width: 0;
+            }
+            to{
+                width: var(--wid);
+            }
+        }
+        @keyframes whcaret {
+            50%{
+                border-color: var(--btnBgCol);
+            }
+        }
+        
+        @keyframes whtyping {
+            form{
+                width: 0;
+            }
+            to{
+                width: var(--wid);
+            }
+        }
+        @keyframes jhcaret {
+            50%{
+                border-color: var(--btnBgCol);
+            }
+        }
+        
+        @keyframes jhtyping {
+            form{
+                width: 0;
+            }
+            to{
+                width: var(--wid);
+            }
+        }
+        @keyframes chcaret {
+            50%{
+                border-color: var(--btnBgCol);
+            }
+        }
+        
+        @keyframes chtyping {
+            form{
+                width: 0;
+            }
+            to{
+                width: var(--wid);
+            }
+        }
+        @keyframes yhcaret {
+            50%{
+                border-color: var(--btnBgCol);
+            }
+        }
+        
+        @keyframes yhtyping {
+            form{
+                width: 0;
+            }
+            to{
+                width: var(--wid);
+            }
+        }
+        
+        .container > .info > .text > .content{
+            margin-top: 1vmin;
+            text-indent: 2em;
+
+            font-size: 2vmin;
+            color: rgb(0, 0, 0);
+
+            text-align: justify;
+        }
+
+        .container > .info > .text > button{
+            /* position: absolute; */
+            margin-top: 2vmin;
+
+            font-size: 3vmin;
+            
+            padding: .1vmin 2.5vmin;
+
+            border: none;
+            border-radius: .5vmin;
+            background: gray;
+            color: white;
+        }
+        .container > .info > .text > button:hover{
+            background: var(--btnBgCol);
+            color: black;
+        }
+        
+        </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bgimg"></div>
+
+        <div class="info">
+            <div class="foc"></div>
+            <div class="text">
+                <p class="title">月海</p>
+                <hr style='background-color:rgb(0, 0, 0); height:2px; border:none;''/>
+                <p class="content">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Delectus laboriosam qui molestias necessitatibus id officia, sint ea voluptas dolore natus modi, temporibus adipisci ipsam pariatur vitae voluptatem, obcaecati sequi rerum.</p>
+                <button>➡</button>
+            </div>
+        </div>
+
+        <div class="tabbar">
+            <div class="btnContainer">
+                <div class="btnbg">
+                    <div class="left"></div>
+                    <div class="center"></div>
+                    <div class="right"></div>
+                </div>
+            </div>
+            <ul>
+                <li>
+                    <img class="ffh" src="./src/btnIcon/01.png">
+                    <p>丰富海</p>
+                </li>
+                <li>
+                    <img class="wh" src="./src/btnIcon/02.png">
+                    <p>危海</p>
+                </li>
+                <li>
+                    <img class="jh" src="./src/btnIcon/03.png">
+                    <p>静海</p>
+                </li>
+                <li>
+                    <img class="ch" src="./src/btnIcon/04.png">
+                    <p>晴朗海</p>
+                </li>
+                <li>
+                    <img class="yh" src="./src/btnIcon/05.png">
+                    <p>雨海</p>
+                </li>
+                <li class="anim"></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let container = document.querySelector('.container')
+        let bgimg = document.querySelector('.bgimg')
+        let btnC = document.querySelector('ul')
+        let btns = document.querySelectorAll('ul img')
+
+        let btnContainer = document.querySelector('.btnContainer')
+        let btnbg = document.querySelector('.btnbg')
+        let anim = document.querySelector('.anim')
+
+        let ffh = document.querySelector('.ffh')
+        
+        let foc = document.querySelector('.foc')
+        let text = document.querySelector('.text')
+        let title = document.querySelector('.title')
+        let content = document.querySelector('.content')
+        
+        let toSearch = document.querySelector('button')
+        let p = document.querySelectorAll('.container > .tabbar > ul > li > p')
+
+        function pSize(){
+            if(document.documentElement.clientWidth > 600){
+                p.forEach(item=>{
+                    item.classList.remove('onscreen')
+                })
+            }else{
+                p.forEach(item=>{
+                    item.classList.add('onscreen')
+                })
+            }
+        }
+
+        pSize()
+
+        toSearch.onclick = (e)=>{
+            e.stopPropagation();
+            console.log(title.innerHTML);
+        }
+
+        function offsetWH(scale, hri, ver){
+            let imgH = bgimg.clientHeight
+            let imgW = bgimg.clientWidth
+
+            let bgHriOffset = -(imgW * scale * hri)
+            let bgVerOffset = -(imgH * scale * ver)
+
+            bgimg.style.setProperty('--bgScaleOffset',scale)
+            bgimg.style.setProperty('--bgHriOffset',bgHriOffset)
+            bgimg.style.setProperty('--bgVerOffset',bgVerOffset)
+
+            bgimg.classList.add('active')
+        }
+        
+        container.onclick = ()=>{
+            console.log('c');
+            // offsetWH(1, -0.12, -0.12)
+            bgimg.classList.remove('active')
+            resetActive(btns)
+            btnContainer.classList.remove('active')
+            anim.classList.remove('active')
+            foc.classList.remove('active')
+            text.classList.remove('active')
+            title.className = 'title'
+        }
+
+        function resetActive(obj){
+            obj.forEach(item=>{
+                item.classList.remove('active')
+            })
+        }
+        
+        function titleHtml(text,contentText,wid,myclass){
+                title.innerHTML = text
+                content.innerHTML = contentText
+                title.style.setProperty('--wid', wid + 'ch')
+                
+                title.className = 'title'
+                title.classList.add(myclass)
+        }
+        
+        btnC.onclick = (e)=>{
+            e.stopPropagation();
+            if(e.target.tagName === 'IMG'){
+                let padding = ffh.parentNode.offsetLeft*2
+                // console.log(padding);
+                let offHri = e.target.parentNode.offsetLeft/(e.target.parentNode.parentNode.clientWidth)
+                let offHriPer = Number((offHri*100).toFixed(2)) + 1.8
+                // console.log(offHriPer +'%');
+                anim.style.left = offHriPer + '%'
+                anim.classList.add('active')
+
+                btnbg.style.left = offHriPer - 100 + 5.4 + '%'
+
+                btnContainer.classList.add('active')
+
+                foc.classList.add('active')
+                text.classList.add('active')
+            }
+            if(e.target.className === 'ffh'){
+                offsetWH(3, -.03, .4)
+                resetActive(btns)
+                e.target.classList.add('active')
+                
+                let contentText = '月海之丰富海（拉丁语：Mare Fecunditatis，又译丰饶海、丰海）是月球上一座直径909公里的月海，位于月球的东南部。'
+                titleHtml('丰富海', contentText, 6, 'ffh')
+            }
+            if(e.target.className === 'wh'){
+                offsetWH(3.5, .03, .35)
+                resetActive(btns)
+                e.target.classList.add('active')
+                let contentText = '月海之危海（Mare Crisium）是位于月球正面东部危海盆地中的一座月海，位于560×420公里范围内，面积近17.6万平方公里，表面极为平坦。它是月球正面最孤独的月海：四周环被辽阔的高地环抱，仅间杂着一些零碎的小月海区。该月海中分布有质量瘤、皱岭和撞击坑等特征，但没有类似月溪的地堑。'
+                titleHtml('危海', contentText, 4, 'wh')
+            }
+            if(e.target.className === 'jh'){
+                offsetWH(2.5, -.15, .3)
+                resetActive(btns)
+                e.target.classList.add('active')
+                
+                let contentText = '月海之静海（拉丁语：Mare Tranquillitatis，意为“安宁之海”或“安静之海”）是一座坐落在月球静海撞击盆地内的月海。面积约为42万平方千米，低于月球表面1700米。'
+                titleHtml('静海', contentText, 4, 'jh')
+            }
+            if(e.target.className === 'ch'){
+                offsetWH(2.5, -.18, .15)
+                resetActive(btns)
+                e.target.classList.add('active')
+
+                let contentText = '月海之晴朗海、澄海（拉丁语：Mare Serenitatis，又译“澄净之海”）是月球上位于雨海东面的一个月海。澄海坐落于酒海纪时期形成的澄海盆地，月海周边的物质生成于早雨海世时期，但月海自身的物质却产生于晚雨海世。月海的玄武岩熔岩覆盖了大部分盆地并漫溢到西北的梦湖。'
+                titleHtml('晴朗海', contentText, 6, 'ch')
+            }
+            if(e.target.className === 'yh'){
+                offsetWH(2, -.2, -.1)
+                resetActive(btns)
+                e.target.classList.add('active')
+
+                let contentText = '月海之雨海 （拉丁语：Mare Imbrium，拉丁文的意思是"淋浴之海"或"海雨之海"）是月球上布满整个雨海撞击盆地的辽阔月海，也是太阳系中最大的撞击坑之一。月球月海中的特征较其它区域更少，因为熔化的岩浆填平了撞击坑并形成一个相对较平整的表面。但就雨海而言，由于后续事件改变了表面地貌，它已远不如原先那样平坦了。'
+                titleHtml('雨海', contentText, 4, 'yh')
+            }
+        }
+    </script>
+</body>
+</html>
